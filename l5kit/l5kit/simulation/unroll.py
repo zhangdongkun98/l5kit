@@ -193,7 +193,52 @@ class ClosedLoopSimulator:
                 agents_input = sim_dataset.rasterise_agents_frame_batch(frame_index)
                 if len(agents_input):  # agents may not be available
                     agents_input_dict = default_collate(list(agents_input.values()))
-                    agents_output_dict = self.model_agents(move_to_device(agents_input_dict, self.device))
+                    agents_output_dict = self.model_agents(move_to_device(agents_input_dict, self.device))  ### torch.Size([num_agents, num_steps, 2 or 1])
+                    ### Data(   positions=torch.Size([num_agents, num_steps, 2]),
+                    ###         yaws=torch.Size([num_agents, num_steps, 1]),
+                    ###         velocities=torch.Size([num_agents, num_steps, 2])  )
+
+
+                    ### data
+                    # agent in:  Data(frame_index=torch.Size([35]), image=torch.Size([35, 15, 224, 224]), target_positions=torch.Size([35, 50, 2]), 
+                    # target_yaws=torch.Size([35, 50, 1]), target_velocities=torch.Size([35, 50, 2]), target_availabilities=torch.Size([35, 50]), 
+                    # history_positions=torch.Size([35, 6, 2]), history_yaws=torch.Size([35, 6, 1]), history_velocities=torch.Size([35, 5, 2]), 
+                    # history_availabilities=torch.Size([35, 6]), world_to_image=torch.Size([35, 3, 3]), raster_from_agent=torch.Size([35, 3, 3]), 
+                    # raster_from_world=torch.Size([35, 3, 3]), agent_from_world=torch.Size([35, 3, 3]), world_from_agent=torch.Size([35, 3, 3]), 
+                    # centroid=torch.Size([35, 2]), yaw=torch.Size([35]), extent=torch.Size([35, 3]), history_extents=torch.Size([35, 6, 2]), 
+                    # future_extents=torch.Size([35, 50, 2]), curr_speed=torch.Size([35]), scene_index=torch.Size([35]), host_id=torch.Size([35, 70]), 
+                    # timestamp=torch.Size([35]), track_id=torch.Size([35]))
+
+                    # agent out:  Data(positions=torch.Size([35, 50, 2]), yaws=torch.Size([35, 50, 1]), velocities=torch.Size([35, 50, 2]))
+
+
+                    # ego in:  Data(frame_index=torch.Size([3]), image=torch.Size([3, 15, 224, 224]), target_positions=torch.Size([3, 50, 2]), 
+                    # target_yaws=torch.Size([3, 50, 1]), target_velocities=torch.Size([3, 50, 2]), target_availabilities=torch.Size([3, 50]), 
+                    # history_positions=torch.Size([3, 6, 2]), history_yaws=torch.Size([3, 6, 1]), history_velocities=torch.Size([3, 5, 2]), 
+                    # history_availabilities=torch.Size([3, 6]), world_to_image=torch.Size([3, 3, 3]), raster_from_agent=torch.Size([3, 3, 3]), 
+                    # raster_from_world=torch.Size([3, 3, 3]), agent_from_world=torch.Size([3, 3, 3]), world_from_agent=torch.Size([3, 3, 3]), 
+                    # centroid=torch.Size([3, 2]), yaw=torch.Size([3]), extent=torch.Size([3, 3]), history_extents=torch.Size([3, 6, 2]), 
+                    # future_extents=torch.Size([3, 50, 2]), curr_speed=torch.Size([3]), scene_index=torch.Size([3]), host_id=torch.Size([3, 70]), 
+                    # timestamp=torch.Size([3]), track_id=torch.Size([3]))
+
+                    # ego out:  Data(positions=torch.Size([3, 12, 2]), yaws=torch.Size([3, 12, 1]), velocities=torch.Size([3, 12, 2]))
+
+                    # positions: [batch_size, num_steps, 2->(XY)]
+                    # yaws: [batch_size, num_steps, 1->(yaw)]
+
+
+
+
+                    ### viz
+                    # import cv2
+                    # import time
+                    # images = agents_input_dict['image']  ### torch.Size([num_agents, 15, 224, 224])
+                    # rasterizer = self.dataset.rasterizer
+                    # for batch_index, image in tqdm(enumerate(images)):
+                    #     im_ego = rasterizer.to_rgb(image.cpu().numpy().transpose(1, 2, 0))
+                    #     im_ego = cv2.cvtColor(im_ego, cv2.COLOR_RGB2BGR)
+                    #     cv2.imwrite('./results/tmp/{}_{}.png'.format(str(batch_index), str(time.time())), im_ego)
+
 
                     # for update we need everything as numpy
                     agents_input_dict = move_to_numpy(agents_input_dict)
