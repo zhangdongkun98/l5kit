@@ -193,7 +193,7 @@ class ClosedLoopSimulator:
                 agents_input = sim_dataset.rasterise_agents_frame_batch(frame_index)
                 if len(agents_input):  # agents may not be available
                     agents_input_dict = default_collate(list(agents_input.values()))
-                    agents_output_dict = self.model_agents(move_to_device(agents_input_dict, self.device))  ### torch.Size([num_agents, num_steps, 2 or 1])
+                    agents_output_dict = self.model_agents(move_to_device(agents_input_dict, self.device))  ### torch.Size([num_agents for num_scenes, num_steps, 2 or 1])
                     ### Data(   positions=torch.Size([num_agents, num_steps, 2]),
                     ###         yaws=torch.Size([num_agents, num_steps, 1]),
                     ###         velocities=torch.Size([num_agents, num_steps, 2])  )
@@ -242,7 +242,7 @@ class ClosedLoopSimulator:
 
                     # for update we need everything as numpy
                     agents_input_dict = move_to_numpy(agents_input_dict)
-                    agents_output_dict = move_to_numpy(agents_output_dict)
+                    agents_output_dict = move_to_numpy(agents_output_dict)   ### num_scenes
 
                     if should_update:
                         self.update_agents(sim_dataset, next_frame_index, agents_input_dict, agents_output_dict)
@@ -378,7 +378,7 @@ class ClosedLoopSimulator:
         """
         world_from_agent = input_dict["world_from_agent"]
         yaw = input_dict["yaw"]
-        pred_trs = transform_points(output_dict["positions"][:, :1], world_from_agent)
-        pred_yaws = np.expand_dims(yaw, -1) + output_dict["yaws"][:, :1, 0]
+        pred_trs = transform_points(output_dict["positions"][:, :1], world_from_agent)  ### shape (3, 1, 2)
+        pred_yaws = np.expand_dims(yaw, -1) + output_dict["yaws"][:, :1, 0]  ### shape (3, 1)
 
         dataset.set_ego(frame_idx, 0, pred_trs, pred_yaws)
