@@ -157,6 +157,8 @@ class VectorizedModel(nn.Module):
         if self.disable_map:  # lanes (mid), crosswalks, and lanes boundaries.
             invalid_polys[:, (1 + other_agents_len):] = 1  # lanes won't create attention
 
+        import pdb; pdb.set_trace()
+
         if self.disable_lane_boundaries:
             type_embedding = type_embedding[:-lane_bdry_len]
 
@@ -205,6 +207,31 @@ class VectorizedModel(nn.Module):
         # batch_size x (1 + M) x num features
         type_embedding = self.type_embedding(data_batch).transpose(0, 1)
         lane_bdry_len = data_batch["lanes"].shape[1]
+        
+        # import matplotlib.pyplot as plt
+        # for d in data_batch['lanes_mid'][0]:
+        #     d = d.cpu()
+        #     xx, yy = d[:,0], d[:,1]
+        #     plt.plot(xx, yy)
+        #     plt.gca().set_aspect('equal', adjustable='box')
+        #     # plt.pause(1)
+
+        # ego = data_batch["agent_trajectory_polyline"][0].cpu()
+        # plt.plot(ego[:,0], ego[:,1], 'or')
+
+        # for other in data_batch["other_agents_polyline"][0]:
+        #     other = other.cpu()
+        #     plt.plot(other[:,0], other[:,1], 'o')
+        #     # plt.pause(1)
+
+        # print('\n\n\n\n\nfinish')
+        # plt.show()
+        # import numpy as np
+        # x_diff = np.diff(data_batch['lanes_mid'][0][:,:,0].cpu().numpy(), axis=1)
+        # y_diff = np.diff(data_batch['lanes_mid'][0][:,:,1].cpu().numpy(), axis=1)
+        # np.sqrt(x_diff**2 + y_diff**2)
+
+        # import pdb; pdb.set_trace()
 
         # call the model with these features
         outputs, attns = self.model_call(
