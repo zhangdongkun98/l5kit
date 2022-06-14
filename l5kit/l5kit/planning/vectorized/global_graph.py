@@ -93,6 +93,17 @@ class VectorizedEmbedding(nn.Module):
             indices[:, lanes_bdry_start_idx::2].fill_(self.polyline_types["LANE_BDRY_LEFT"])
             indices[:, lanes_bdry_start_idx + 1:: 2].fill_(self.polyline_types["LANE_BDRY_RIGHT"])
 
+        ### indices[0]
+        # tensor([ 0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
+        #         1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  9,  9,  9,  9,  9,
+        #         9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,
+        #         9,  9,  9,  9,  9,  9,  9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+        #         10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 12, 11, 12, 11, 12, 11, 12, 11,
+        #         12, 11, 12, 11, 12, 11, 12, 11, 12, 11, 12, 11, 12, 11, 12, 11, 12, 11,
+        #         12, 11, 12, 11, 12, 11, 12, 11, 12, 11, 12, 11, 12, 11, 12, 11, 12, 11,
+        #         12, 11, 12, 11, 12, 11, 12, 11, 12, 11, 12, 11, 12, 11, 12],
+        #     device='cuda:0')
+
         return self.embedding.forward(indices)
 
 
@@ -143,6 +154,7 @@ class MultiheadAttentionGlobalHead(nn.Module):
         #   - query is ego's vector
         #   - key is inputs plus type embedding
         #   - value is inputs
+        # import pdb; pdb.set_trace()
         out, attns = self.encoder(inputs[[0]], inputs + type_embedding, inputs, mask)
         outputs = self.output_embed(out[0]).view(-1, self.num_timesteps, self.num_outputs)
         return outputs, attns

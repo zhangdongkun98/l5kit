@@ -99,7 +99,7 @@ class VectorizedModel(nn.Module):
         """
         # embed inputs
         # [batch_size, num_elements, max_num_points, embed_dim]
-        polys = self.input_embed(features)
+        polys = self.input_embed(features)   ### torch.Size([12, 81, 20, 3])    -->    torch.Size([12, 81, 20, 256])
         # calculate positional embedding
         # [1, 1, max_num_points, embed_dim]
         pos_embedding = self.positional_embedding(features).unsqueeze(0).transpose(1, 2)
@@ -137,7 +137,7 @@ class VectorizedModel(nn.Module):
         )
         static_polys_feats = static_polys / self.other_agent_std
 
-        all_polys = torch.cat([agents_polys_feats, static_polys_feats], dim=1)
+        all_polys = torch.cat([agents_polys_feats, static_polys_feats], dim=1)   ### torch.Size([12, 81, 20, 3])
         all_avail = torch.cat([agents_avail, static_avail], dim=1)
 
         # Embed inputs, calculate positional embedding, call local subgraph
@@ -157,7 +157,7 @@ class VectorizedModel(nn.Module):
         if self.disable_map:  # lanes (mid), crosswalks, and lanes boundaries.
             invalid_polys[:, (1 + other_agents_len):] = 1  # lanes won't create attention
 
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
 
         if self.disable_lane_boundaries:
             type_embedding = type_embedding[:-lane_bdry_len]
@@ -205,7 +205,7 @@ class VectorizedModel(nn.Module):
         agents_availabilities = pad_avail(agents_availabilities, max_num_vectors)
 
         # batch_size x (1 + M) x num features
-        type_embedding = self.type_embedding(data_batch).transpose(0, 1)
+        type_embedding = self.type_embedding(data_batch).transpose(0, 1)  ### torch.Size([141, 12, 256])
         lane_bdry_len = data_batch["lanes"].shape[1]
         
         # import matplotlib.pyplot as plt

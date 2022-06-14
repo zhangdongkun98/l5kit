@@ -11,8 +11,8 @@ __pycache__/
 
 *.DS_Store
 
-*.pth
-*.pt
+# *.pth
+# *.pt
 *.onnx
 *.mp4
 *.avi
@@ -28,3 +28,6 @@ coverage_report*
 .env*/
 .venv*/
 agents_mask/
+
+results
+results*

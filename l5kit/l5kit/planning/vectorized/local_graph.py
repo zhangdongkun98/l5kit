@@ -94,7 +94,7 @@ class LocalSubGraphLayer(nn.Module):
         x_agg = masked_x.max(dim=1, keepdim=True).values
         # repeat it along the sequence length
         x_agg = x_agg.repeat(1, num_vectors, 1)
-        x = torch.cat([x, x_agg], dim=-1)
+        x = torch.cat([x, x_agg], dim=-1)   ### torch.cat([x, x_agg], dim=2)
         x = self.linear_remap(x)  # remap to a possibly different feature length
         return x
 
